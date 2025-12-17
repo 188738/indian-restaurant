@@ -1,0 +1,37 @@
+[
+  {
+    "id": "f1",
+    "question": "Do you have vegetarian options?",
+    "answer": "Yes—many of our dishes are vegetarian, including Chana Masala, Paneer Tikka, Masala Dosa, Vegetable Biryani, Onion Pakora, and Vegetable Samosa."
+  },
+  {
+    "id": "f2",
+    "question": "Do you have vegan options?",
+    "answer": "We have vegan-friendly dishes. Please ask us to avoid ghee or cream and we can recommend options like Chana Masala and some dosas."
+  },
+  {
+    "id": "f3",
+    "question": "Do you have gluten-free options?",
+    "answer": "Yes—several dishes are naturally gluten-free, including Masala Dosa, Chana Masala, Vegetable Biryani, and Onion Pakora. Please tell us about any severe allergies."
+  },
+  {
+    "id": "f4",
+    "question": "How spicy is your food?",
+    "answer": "We can adjust spice levels from mild to spicy for many dishes—just tell us your preference."
+  },
+  {
+    "id": "f5",
+    "question": "Do you have nut-free options?",
+    "answer": "Some dishes may contain nuts or be prepared near nuts. Tell us your allergy and we will guide you to safer choices."
+  },
+  {
+    "id": "f6",
+    "question": "What are good starters or appetizers?",
+    "answer": "Popular starters include Onion Pakora, Vegetable Samosa, and Paneer Tikka."
+  },
+  {
+    "id": "f7",
+    "question": "What is your most popular dish?",
+    "answer": "The most popular dish here is our chicken biryani."
+  }
+]

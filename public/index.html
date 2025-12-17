@@ -1,0 +1,169 @@
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width,initial-scale=1" />
+  <title>Indian Restaurant Assistant (RAG + Bedrock)</title>
+
+  <style>
+    :root { color-scheme: light; }
+    body { font-family: system-ui, -apple-system, Segoe UI, Roboto, Arial; max-width: 920px; margin: 30px auto; padding: 0 16px; line-height: 1.35; }
+    h1 { margin: 0 0 6px; }
+    p { margin: 0 0 16px; color: #444; }
+    .row { display: flex; gap: 10px; margin: 14px 0 18px; }
+    input { flex: 1; padding: 12px; font-size: 16px; border: 1px solid #ddd; border-radius: 10px; }
+    button { padding: 12px 16px; font-size: 16px; cursor: pointer; border: 1px solid #ddd; background: #fff; border-radius: 10px; }
+    button:disabled { opacity: .6; cursor: not-allowed; }
+    .card { border: 1px solid #e2e2e2; border-radius: 14px; padding: 14px; margin: 10px 0; background: #fff; }
+    .muted { color: #666; font-size: 13px; }
+    .tag { display:inline-block; padding: 2px 8px; border:1px solid #ddd; border-radius: 999px; margin-right:6px; margin-top:6px; font-size: 12px; background:#fafafa; }
+    .split { display:flex; justify-content:space-between; gap: 10px; align-items: baseline; }
+    .price { font-weight: 600; }
+    .pill { display:inline-block; padding: 4px 10px; border-radius: 999px; font-size: 12px; border: 1px solid #ddd; background: #fafafa; }
+    details { margin-top: 10px; }
+    pre { background: #f6f6f6; padding: 12px; overflow:auto; border-radius: 12px; border: 1px solid #eee; }
+    .error { border-color: #ffb4b4; background: #fff5f5; }
+  </style>
+</head>
+
+<body>
+  <h1>🍛 Indian Restaurant Assistant</h1>
+  <p>
+    Ask things like:
+    <b>“best starter”</b>, <b>“vegetarian gluten free options”</b>, <b>“something spicy but not too heavy”</b>
+  </p>
+
+  <div class="row">
+    <input id="q" placeholder="Type a question…" value="what is your best starter?" />
+    <button id="btn">Ask</button>
+  </div>
+
+  <div id="status" class="muted"></div>
+
+  <h2>Answer (Bedrock)</h2>
+  <div id="answer" class="card">
+    <span class="muted">Ask a question to see the Bedrock answer here.</span>
+  </div>
+
+  <h2>Top FAQ Source</h2>
+  <div id="faq"></div>
+
+  <h2>Menu Sources</h2>
+  <div id="menu"></div>
+
+  <details>
+    <summary class="pill">Show raw JSON</summary>
+    <pre id="raw"></pre>
+  </details>
+
+<script>
+  const $ = (id) => document.getElementById(id);
+
+  function renderFaq(faqArr) {
+    const faqDiv = $("faq");
+    faqDiv.innerHTML = "";
+
+    const top = (faqArr && faqArr[0]) ? faqArr[0] : null;
+    if (!top) {
+      faqDiv.innerHTML = `<div class="card"><span class="muted">No FAQ match found.</span></div>`;
+      return;
+    }
+
+    faqDiv.innerHTML = `
+      <div class="card">
+        <div class="split">
+          <b>${escapeHtml(top.meta.question || "")}</b>
+          <span class="muted">score: ${Number(top.score || 0).toFixed(3)}</span>
+        </div>
+        <div style="margin-top:8px">${escapeHtml(top.meta.answer || "")}</div>
+      </div>
+    `;
+  }
+
+  function renderMenu(menuArr) {
+    const menuDiv = $("menu");
+    menuDiv.innerHTML = "";
+
+    if (!menuArr || menuArr.length === 0) {
+      menuDiv.innerHTML = `<div class="card"><span class="muted">No menu items found.</span></div>`;
+      return;
+    }
+
+    menuArr.forEach(item => {
+      const tags = (item.meta?.tags || []).map(t => `<span class="tag">${escapeHtml(t)}</span>`).join("");
+      menuDiv.innerHTML += `
+        <div class="card">
+          <div class="split">
+            <b>${escapeHtml(item.meta?.name || "")}</b>
+            <span class="price">$${Number(item.meta?.price || 0).toFixed(2)}</span>
+          </div>
+          <div style="margin-top:8px">${escapeHtml(item.meta?.description || "")}</div>
+          <div style="margin-top:10px">${tags}</div>
+          <div class="muted" style="margin-top:10px">score: ${Number(item.score || 0).toFixed(3)}</div>
+        </div>
+      `;
+    });
+  }
+
+  function escapeHtml(str) {
+    return String(str)
+      .replaceAll("&", "&amp;")
+      .replaceAll("<", "&lt;")
+      .replaceAll(">", "&gt;")
+      .replaceAll('"', "&quot;")
+      .replaceAll("'", "&#039;");
+  }
+
+  async function ask_llm() {
+    const query = $("q").value.trim();
+    if (!query) return;
+
+    $("btn").disabled = true;
+    $("status").textContent = "Thinking… (retrieval + Bedrock)";
+    $("answer").classList.remove("error");
+    $("answer").innerHTML = `<span class="muted">Thinking…</span>`;
+
+    try {
+      const res = await fetch("/ask_llm", {
+        method: "POST",
+        headers: {"Content-Type":"application/json"},
+        body: JSON.stringify({ query })
+      });
+
+      const data = await res.json();
+
+      // If backend returned an error message
+      if (!res.ok) {
+        throw new Error(data?.error || `Request failed: ${res.status}`);
+      }
+
+      $("raw").textContent = JSON.stringify(data, null, 2);
+
+      // Bedrock answer
+      $("answer").innerHTML = escapeHtml(data.answer || "I don't know.");
+
+      // Sources
+      renderFaq(data.faq);
+      renderMenu(data.menu);
+
+      $("status").textContent = `OK — answered using Bedrock with ${data.menu?.length || 0} menu sources and ${data.faq?.length || 0} FAQ sources.`;
+    } catch (err) {
+      $("status").textContent = "Error. Check Raw JSON / terminal logs.";
+      $("answer").classList.add("error");
+      $("answer").innerHTML = `<b>Something went wrong:</b><div style="margin-top:8px">${escapeHtml(err.message || String(err))}</div>`;
+      $("raw").textContent = "";
+      $("faq").innerHTML = "";
+      $("menu").innerHTML = "";
+    } finally {
+      $("btn").disabled = false;
+    }
+  }
+
+  $("btn").addEventListener("click", ask_llm);
+  $("q").addEventListener("keydown", (e) => {
+    if (e.key === "Enter") ask_llm();
+  });
+
+  // Optional: run once on load
+  ask_llm();
+</script>
+</body>

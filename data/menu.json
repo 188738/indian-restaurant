@@ -1,0 +1,72 @@
+[
+  {
+    "id": "m1",
+    "name": "Chana Masala",
+    "description": "Chickpeas cooked in a tangy tomato-onion gravy with warming spices.",
+    "tags": ["vegetarian", "gluten-free", "medium-spicy"],
+    "price": 12.99
+  },
+  {
+    "id": "m2",
+    "name": "Paneer Tikka",
+    "description": "Grilled paneer cubes marinated in yogurt, chili, and spices; served with mint chutney.",
+    "tags": ["vegetarian", "starter", "contains-dairy", "spicy"],
+    "price": 13.99
+  },
+  {
+    "id": "m3",
+    "name": "Chicken Tikka Masala",
+    "description": "Roasted chicken in a creamy tomato sauce with garam masala and butter.",
+    "tags": ["non-vegetarian", "contains-dairy", "medium-spicy"],
+    "price": 15.99
+  },
+  {
+    "id": "m4",
+    "name": "Masala Dosa",
+    "description": "Crispy rice-lentil crepe filled with spiced potatoes; served with sambar and chutneys.",
+    "tags": ["vegetarian", "gluten-free", "mild"],
+    "price": 11.99
+  },
+  {
+    "id": "m5",
+    "name": "Vegetable Biryani",
+    "description": "Basmati rice cooked with mixed vegetables, saffron, and aromatic whole spices.",
+    "tags": ["vegetarian", "gluten-free", "mild"],
+    "price": 14.49
+  },
+  {
+    "id": "m6",
+    "name": "Gulab Jamun",
+    "description": "Milk-solid dumplings soaked in rose-cardamom syrup.",
+    "tags": ["vegetarian", "contains-dairy", "dessert"],
+    "price": 5.99
+  },
+  {
+    "id": "m7",
+    "name": "Onion Pakora",
+    "description": "Crispy onion fritters in chickpea batter; a classic Indian appetizer served with mint chutney.",
+    "tags": ["vegetarian", "starter", "gluten-free", "medium-spicy"],
+    "price": 7.99
+  },
+  {
+    "id": "m8",
+    "name": "Vegetable Samosa",
+    "description": "Golden fried pastry filled with spiced potatoes and peas; served with tamarind chutney.",
+    "tags": ["vegetarian", "starter", "contains-gluten", "mild"],
+    "price": 6.99
+  },
+  {
+    "id": "m9",
+    "name": "paneer koorma",
+    "description": "paneer which is cruched into pieces and made into a gravy",
+    "tags": ["vegetarian", "main dish", "cheese", "paneer"],
+    "price": 13.99
+  },
+  {
+    "id": "m9",
+    "name": "chicken biryani",
+    "description": "chicken pieces cooked over basmati rice",
+    "tags": ["non vegetarian", "main dish", "chicken", "most popular"],
+    "price": 17.99
+  }
+]
